@@ -1,36 +1,23 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-<form method="GET" class="mb-3">
-    <input 
-      type="text" 
-      name="q" 
-      class="form-control" 
-      placeholder="Search recipes..." 
-      value="{{ query }}"
-      autofocus
-    >
-</form>
-
+{% if current_user.is_authenticated %}
 <a href="/add" class="btn btn-primary mb-3">Add New Recipe</a>
-
+{% endif %}
 <div class="row">
     {% for recipe in recipes %}
     <div class="col-md-4">
-        <div class="card mb-4 h-100">
-            {% if recipe.image_url %}
-            <img src="{{ recipe.image_url }}" class="card-img-top" style="height: 200px; object-fit: cover;">
-            {% endif %}
-            <div class="card-body d-flex flex-column">
+        <div class="card mb-4">
+            <div class="card-body">
                 <h5 class="card-title">{{ recipe.title }}</h5>
                 <p><strong>Ingredients:</strong><br>{{ recipe.ingredients }}</p>
                 <p><strong>Instructions:</strong><br>{{ recipe.instructions }}</p>
-                <div class="mt-auto d-flex justify-content-between">
-                    <form action="/delete/{{ recipe.id }}" method="POST" onsubmit="return confirm('Are you sure?')">
-                        <button type="submit" class="btn btn-danger btn-sm">🗑️ Delete</button>
-                    </form>
-                    <a href="/edit/{{ recipe.id }}" class="btn btn-warning btn-sm">✏️ Edit</a>
-                </div>
+                {% if current_user.is_authenticated and recipe.user_id == current_user.id %}
+                <form action="/delete/{{ recipe.id }}" method="POST" onsubmit="return confirm('Are you sure?')">
+                    <button type="submit" class="btn btn-danger btn-sm">🗑️ Delete</button>
+                </form>
+                <a href="/edit/{{ recipe.id }}" class="btn btn-warning btn-sm mt-2">✏️ Edit</a>
+                {% endif %}
             </div>
         </div>
     </div>

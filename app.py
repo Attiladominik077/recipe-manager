@@ -18,7 +18,6 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
-    recipes = db.relationship('Recipe', backref='user', lazy=True)
 
 class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -90,7 +89,7 @@ def signup():
             flash('Username already exists')
             return redirect(url_for('signup'))
 
-        hashed_password = generate_password_hash(password, method='sha256')
+        hashed_password = generate_password_hash(password)
         new_user = User(username=username, password=hashed_password)
         db.session.add(new_user)
         db.session.commit()

@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key'  # Replace with a strong secret key
@@ -32,8 +34,13 @@ def load_user(user_id):
 
 @app.route('/')
 def index():
-    recipes = Recipe.query.all()
+    query = request.args.get('q', '')
+    if query:
+        recipes = Recipe.query.filter(Recipe.title.ilike(f'%{query}%')).all()
+    else:
+        recipes = Recipe.query.all()
     return render_template('index.html', recipes=recipes)
+
 
 @app.route('/add', methods=['GET', 'POST'])
 @login_required
